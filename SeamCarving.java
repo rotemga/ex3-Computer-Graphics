@@ -64,8 +64,8 @@ public static void main(String[] args){
 			img = seam_carving.transposeBufferImage(img);
 			seam_carving.setImageHeight(img.getHeight());
 			seam_carving.setImageWidth(img.getWidth());
-			System.out.printf("vertical heigth= %d \n", seam_carving.imageHeight);
-			System.out.printf("vertical width= %d \n", seam_carving.imageWidth);
+			//System.out.printf("vertical heigth= %d \n", seam_carving.imageHeight);
+			//System.out.printf("vertical width= %d \n", seam_carving.imageWidth);
 			vertical=1;
 
 			
@@ -153,7 +153,7 @@ double [][] getEnergy(BufferedImage img, int energy_type){
 
 		}
 	}
-	System.out.printf("w=%d, h=%d \n", w,h);
+	//System.out.printf("w=%d, h=%d \n", w,h);
 
 	for (int j=0;j<h;j++){
 		for (int i=0;i<w;i++){
@@ -317,7 +317,7 @@ int[][] findingLowestEnergySeam(double[][] dynamic_map, int w, int h){
 		pixel = chooseLowestEnergyNeihbor(first, second,third,dynamic_map);
 		i = pixel.getI();
 		result[i][j]=1;
-		System.out.printf("chosen pixel= %d %d \n",pixel.getI(),pixel.getJ());
+		//System.out.printf("chosen pixel= %d %d \n",pixel.getI(),pixel.getJ());
 
 	
 		
@@ -379,7 +379,7 @@ Pixel chooseLowestEnergyNeihbor(Pixel first, Pixel second, Pixel third,double[][
 BufferedImage removeSeam (BufferedImage img, int[][] seam){
 	BufferedImage newImg = new BufferedImage(img.getWidth()-1,img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 	int color;
-	System.out.printf("newImg w = %d, h=%d\n", newImg.getWidth(), newImg.getHeight());
+	//System.out.printf("newImg w = %d, h=%d\n", newImg.getWidth(), newImg.getHeight());
 	int y=img.getHeight()-1,x=0;
 	for (int i=0; i<img.getWidth(); i++){
 		x=i;y=0;
