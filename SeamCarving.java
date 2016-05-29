@@ -158,7 +158,7 @@ double [][] getEnergy(BufferedImage img, int energy_type){
 
 		}
 	}
-	System.out.printf("w=%d, h=%d \n", w,h);
+	//System.out.printf("w=%d, h=%d \n", w,h);
 
 	for (int j=0;j<h;j++){
 		for (int i=0;i<w;i++){
@@ -332,20 +332,20 @@ int[][] findingLowestEnergySeam(double[][] dynamic_map, int w, int h){
 	
 		
 	}
-	System.out.printf("w= %d h=%d \n",w,h);
+//	System.out.printf("w= %d h=%d \n",w,h);
 
 	for (int p=0;p<h;p++){
 		for (int k=0;k<w;k++){
 
 			if (result[k][p]==1){
-				System.out.printf("good=%d	,%d\n", k,p);
+				//System.out.printf("good=%d	,%d\n", k,p);
 				
 			}
 			
 			
 		}
 	}
-	System.out.println("\n");
+	//System.out.println("\n");
 	
 
 
@@ -388,21 +388,21 @@ Pixel chooseLowestEnergyNeihbor(Pixel first, Pixel second, Pixel third,double[][
 BufferedImage removeSeam (BufferedImage img, int[][] seam){
 	BufferedImage newImg = new BufferedImage(img.getWidth()-1,img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 	int color;
-	System.out.printf("newImg w = %d, h=%d\n", newImg.getWidth(), newImg.getHeight());
+	//System.out.printf("newImg w = %d, h=%d\n", newImg.getWidth(), newImg.getHeight());
 	for (int j=0; j<img.getHeight(); j++){
 		boolean shift = false;
 		for (int i=0; i<img.getWidth();i++){
 			if(seam[i][j]==1) {
 				shift = true;
 				if(j==967)
-					System.out.printf("okk = %d, %d\n", i,j);
+					//System.out.printf("okk = %d, %d\n", i,j);
 
 				//System.out.printf("okk = %d, %d\n", i,j);
 				continue;
 			}
 			//System.out.printf("hello = %d, %d\n", i,j);
 
-			if (shift){
+			if (shift && i>0){
 				color = img.getRGB(i,j);
 				newImg.setRGB(i-1, j, color);
 			}
