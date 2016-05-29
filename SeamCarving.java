@@ -68,8 +68,8 @@ public static void main(String[] args){
 				}
 			seam_carving.setImageHeight(img.getHeight());
 			seam_carving.setImageWidth(img.getWidth());
-			System.out.printf("vertical heigth= %d \n", seam_carving.imageHeight);
-			System.out.printf("vertical width= %d \n", seam_carving.imageWidth);
+			//System.out.printf("vertical heigth= %d \n", seam_carving.imageHeight);
+			//System.out.printf("vertical width= %d \n", seam_carving.imageWidth);
 			vertical=1;
 
 			
