@@ -54,6 +54,7 @@ public static void main(String[] args){
 	double [][] Energy; double [][] dynamic_map; 
 	Image image;
 	int horizontal=0, vertical=0;
+	boolean transpose=false;
 	//int width = seam_carving.imageWidth; int height = seam_carving.imageHeight;
 	while ((num_of_horizontal_seam) > 0 || (num_of_vertical_seam) > 0){
 		if (num_of_horizontal_seam > 0){//Decide on a seam direction – horizontal.
@@ -61,11 +62,14 @@ public static void main(String[] args){
 			horizontal=1;
 		}
 		else if (num_of_vertical_seam > 0){//Decide on a seam direction – vertical.
-			img = seam_carving.transposeBufferImage(img);
+			if (!transpose){
+				img = seam_carving.transposeBufferImage(img);
+				transpose=true;
+				}
 			seam_carving.setImageHeight(img.getHeight());
 			seam_carving.setImageWidth(img.getWidth());
-			//System.out.printf("vertical heigth= %d \n", seam_carving.imageHeight);
-			//System.out.printf("vertical width= %d \n", seam_carving.imageWidth);
+			System.out.printf("vertical heigth= %d \n", seam_carving.imageHeight);
+			System.out.printf("vertical width= %d \n", seam_carving.imageWidth);
 			vertical=1;
 
 			
@@ -98,7 +102,8 @@ public static void main(String[] args){
 		
 	}
 	if (vertical==1){
-		img = seam_carving.notTransposeBufferImage(img);
+		if (transpose)
+			img = seam_carving.notTransposeBufferImage(img);
 		File outputfile = new File(output_filename);
 		try{
 		ImageIO.write(img, "png", outputfile); // Write the Buffered Image into an output file
@@ -153,7 +158,7 @@ double [][] getEnergy(BufferedImage img, int energy_type){
 
 		}
 	}
-	//System.out.printf("w=%d, h=%d \n", w,h);
+	System.out.printf("w=%d, h=%d \n", w,h);
 
 	for (int j=0;j<h;j++){
 		for (int i=0;i<w;i++){
@@ -225,15 +230,20 @@ double energyValueOneNeigbor (double R, double G, double B, double currR, double
 
 double entropy(double [][] red, double [][] green, double [][] blue, int i, int j){
 	double sum = 0;
+	int cnt=0;
 	double greyScale;
 	for (int n= i-4; n<i+4;n++ ){
 		for (int m= j-4; m<j+4;m++ ){
+			if ((n >=0) && (m>=0) && (n<imageWidth) && (m<imageHeight)){
 			greyScale = greyScalePm(red, green, blue, n, m);
 			sum += greyScale*Math.log(greyScale);
-		}
+			cnt++;
+		
+			}
+			}
 	}
 	
-	return -sum;
+	return -sum/cnt;
 	
 }
 
@@ -260,7 +270,7 @@ double[][] dynamic_programming_map(double [][] energy, int w,int h){
 	for(int j=0;j<h;j++){
 		for (int i=0;i<w;i++){
 			if (i==0){
-			//	res[i][j] = energy[i][j];
+				res[i][j] = energy[i][j];
 			}
 				
 			else if (j == h-1 ){
@@ -293,11 +303,11 @@ int[][] findingLowestEnergySeam(double[][] dynamic_map, int w, int h){
 			pixel.setPixel(i, h-1);
 		}
 	}
-	result[pixel.getI()][pixel.getJ()]=1;
+	result[pixel.getI()][h-1]=1;
 
 	Pixel first,second,third;
 	int i = pixel.getI();
-	for(int j=h-2;j>0;j--){
+	for(int j=h-1;j>0;j--){
 
 		first=null;
 		second=null;
@@ -316,29 +326,28 @@ int[][] findingLowestEnergySeam(double[][] dynamic_map, int w, int h){
 		}
 		pixel = chooseLowestEnergyNeihbor(first, second,third,dynamic_map);
 		i = pixel.getI();
-		result[i][j]=1;
+		result[pixel.getI()][pixel.getJ()]=1;
 		//System.out.printf("chosen pixel= %d %d \n",pixel.getI(),pixel.getJ());
 
 	
 		
 	}
-//	System.out.printf("w= %d h=%d \n",w,h);
-//
-//	int cnt=1;
-//	for (int p=0;p<w;p++){
-//		for (int k=0;k<h;k++){
-//			System.out.printf("good pixel= %d %d \n",p,k);
-//
-//			if (result[p][k]==1){
-//				System.out.printf("good=%d	", cnt);
-//				cnt++;
-//				
-//			}
-//			
-//			
-//		}
-//	}
-//	System.out.println("\n");
+	System.out.printf("w= %d h=%d \n",w,h);
+
+	for (int p=0;p<h;p++){
+		for (int k=0;k<w;k++){
+
+			if (result[k][p]==1){
+				System.out.printf("good=%d	,%d\n", k,p);
+				
+			}
+			
+			
+		}
+	}
+	System.out.println("\n");
+	
+
 
 
 	
@@ -379,24 +388,31 @@ Pixel chooseLowestEnergyNeihbor(Pixel first, Pixel second, Pixel third,double[][
 BufferedImage removeSeam (BufferedImage img, int[][] seam){
 	BufferedImage newImg = new BufferedImage(img.getWidth()-1,img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 	int color;
-	//System.out.printf("newImg w = %d, h=%d\n", newImg.getWidth(), newImg.getHeight());
-	int y=img.getHeight()-1,x=0;
-	for (int i=0; i<img.getWidth(); i++){
-		x=i;y=0;
-		for (int j=0; j<img.getHeight();j++){
+	System.out.printf("newImg w = %d, h=%d\n", newImg.getWidth(), newImg.getHeight());
+	for (int j=0; j<img.getHeight(); j++){
+		boolean shift = false;
+		for (int i=0; i<img.getWidth();i++){
 			if(seam[i][j]==1) {
-				//System.out.printf("bla= %d \n",seam[i][j]);
+				shift = true;
+				if(j==967)
+					System.out.printf("okk = %d, %d\n", i,j);
+
+				//System.out.printf("okk = %d, %d\n", i,j);
 				continue;
 			}
-			if (i < img.getWidth()-1){
-				//System.out.printf("blablabla x= %d, y= %d \n",x,y);
+			//System.out.printf("hello = %d, %d\n", i,j);
 
-				color = img.getRGB(x,y);
-				newImg.setRGB(x, y, color);
-				//System.out.printf("bla i= %d, j= %d \n",i,j);
-				y++;
-
+			if (shift){
+				color = img.getRGB(i,j);
+				newImg.setRGB(i-1, j, color);
 			}
+			else{
+				color = img.getRGB(i,j);
+				newImg.setRGB(i, j, color);
+			}
+			
+
+			
 		}
 		
 		
@@ -429,12 +445,13 @@ BufferedImage transposeBufferImage(BufferedImage img){
 BufferedImage notTransposeBufferImage(BufferedImage img){
 	int color;
 	BufferedImage newImg = new BufferedImage(img.getHeight(),img.getWidth(), BufferedImage.TYPE_INT_ARGB);
-	for (int j=0; j<img.getWidth(); j++){
-		for (int i=0; i<img.getHeight();i++){
-			color = img.getRGB(i,j);
-			newImg.setRGB(j, i, color);
-		}
-		}
+	newImg = this.transposeBufferImage(img);
+//	for (int j=0; j<img.getWidth(); j++){
+//		for (int i=0; i<img.getHeight();i++){
+//			color = img.getRGB(i,j);
+//			newImg.setRGB(j, i, color);
+//		}
+//		}
 	
 	return newImg;
 
